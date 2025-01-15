@@ -10,12 +10,20 @@ from db.db_requests import (increment_user_streak,
                             reset_user_streak,
                             increment_user_lose,
                             increment_user_win)
+from game.rules import rules
+from game.stats.stats import stats
 
 router = Router()
 
 
 @router.message(StateFilter("playing"))
 async def handle_guess(message: Message, state: FSMContext):
+    if message.text == "/rules":
+        await rules(message, state)
+        return
+    if message.text == "/stats":
+        await stats(message, state)
+
     state_data = await state.get_data()
     guesses = state_data["guesses"]
     word = state_data["word"]
@@ -65,7 +73,7 @@ async def handle_guess(message: Message, state: FSMContext):
                 message_id=message_id
             )
         await message.answer(
-            game_strings["out_of_tries"],
+            game_strings["out_of_tries"].substitute(word=word),
             reply_markup=close_kb
         )
         await increment_user_lose(message.from_user.id)

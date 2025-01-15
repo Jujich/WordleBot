@@ -9,7 +9,7 @@ router = Router()
 
 
 @router.message(Command("rules"))
-async def start(message: Message):
+async def rules(message: Message):
     await message.delete()
     await bot.send_message(
         chat_id=message.chat.id,

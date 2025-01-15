@@ -25,6 +25,9 @@ game_strings = {
         "You guessed it! The word was <b>$word</b>.\n"
         "Use /stats to see your stats or /play to try again!"
     ),
-    "out_of_tries": "You're out of tries!\n"
-                    "Use /stats to see your stats or /play to try again!",
+    "out_of_tries": Template(
+        "You're out of tries!\n\n"
+        "The word was: $word\n\n"
+        "Use /stats to see your stats or /play to try again!"
+    ),
 }
