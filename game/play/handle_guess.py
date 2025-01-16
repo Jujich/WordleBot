@@ -51,6 +51,7 @@ async def handle_guess(message: Message, state: FSMContext):
                 chat_id=message.chat.id,
                 message_id=message_id
             )
+        await state.clear()
         return
 
     words = state_data["words"]
