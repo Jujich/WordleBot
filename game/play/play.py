@@ -18,6 +18,12 @@ async def play(message: Message, state: FSMContext):
     state_ = await state.get_state()
     state_data = await state.get_data()
     user_settings = await get_user_settings(message.from_user.id)
+    if not user_settings:
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text=error_strings_en["user_not_exist"],
+            reply_markup=close_kb_en
+        )
     language = user_settings["language"]
     strings = game_strings_en if language == "en" else game_strings_ru
 
