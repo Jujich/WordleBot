@@ -2,7 +2,7 @@ from aiogram import Dispatcher
 from bot import bot
 import asyncio
 from game.start import start, restart
-from game.stats import stats
+from game.stats import stats, leaderboard
 from game.play import play, handle_guess
 from game import handle_delete_message, rules
 from game.settings import (settings,
@@ -11,6 +11,12 @@ from game.settings import (settings,
                            change_language)
 from game.daily import daily
 from game.daily.get_new_daily_word import run_daily_cycle
+import logging
+
+logging.basicConfig(
+    level=logging.ERROR,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+)
 
 
 dp = Dispatcher()
@@ -18,6 +24,7 @@ dp.include_routers(
     start.router,
     restart.router,
     stats.router,
+    leaderboard.router,
     play.router,
     handle_guess.router,
     handle_delete_message.router,

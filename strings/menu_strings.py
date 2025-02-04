@@ -23,6 +23,12 @@ menu_strings_en = {
         "📈 Daily streak: <b>$streak</b>\n"
         "🔥 Longest daily streak: <b>$longest_streak</b>"
     ),
+    "leaderboard": Template(
+        "📊 Here is the leaderboard:\n\n"
+        "🎮 The most games played:\n$games\n\n"
+        "➗ The biggest guess rate:\n$guess_rate\n\n"
+        "🔥 Longest daily streak:\n$longest_streak\n\n"
+    ),
     "settings": "⚙️ You can change your settings here!",
     "info_error": "❌ Something went wrong, please use /restart to restart the bot",
     "language_info": "🌐 You can change your language with the buttons below",
@@ -51,6 +57,12 @@ menu_strings_ru = {
         "❌ Неправильно: <b>$dlose</b>\n"
         "📈 Ежедневный стрик: <b>$streak</b>\n"
         "🔥 Макс. ежедневный стрик: <b>$longest_streak</b>"
+    ),
+    "leaderboard": Template(
+        "📊 Таблица лидеров:\n\n"
+        "🎮 Наибольшее количество игр:\n$games\n\n"
+        "➗ Наибольший процент правильных:\n$guess_rate\n\n"
+        "🔥 Самый длинный ежедневный стрик:\n$longest_streak\n\n"
     ),
     "settings": "⚙️ Здесь вы можете поменять настройки игры!",
     "info_error": "❌ Что-то пошло не так, используйте /restart чтобы перезапустить бота",

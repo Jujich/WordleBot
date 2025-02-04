@@ -1,3 +1,5 @@
+import logging
+
 from db.classes import User, Settings, Daily
 from db.engine import engine
 from sqlalchemy.orm import Session
@@ -45,13 +47,42 @@ async def get_user_stats(user_id: int) -> dict | None:
         return None
 
 
+async def get_leaderboard() -> dict | None:
+    session = Session(engine)
+    try:
+        res = {"games": "", "guess_rate": "", "longest_streak": ""}
+        games = session.query(User).order_by((User.win + User.lose).desc()).all()[:5]
+        streak = session.query(User).order_by((User.best_streak).desc()).all()[:5]
+        guess_rate = session.query(User).order_by((User.win / (User.win + User.lose)).desc()).all()[:5]
+        for i in range(5):
+            try:
+                res["games"] += f"<b>{i + 1}.</b> <i>{games[i].username}</i> - <b>{games[i].win + games[i].lose}</b>\n"
+                res["guess_rate"] += f"<b>{i + 1}.</b> <i>{guess_rate[i].username}</i> - <b>{round((guess_rate[i].win / (guess_rate[i].win + guess_rate[i].lose)) * 100, 2) if guess_rate[i].win + guess_rate[i].lose != 0 else 0.0}%</b>\n"
+                res["longest_streak"] += f"<b>{i + 1}.</b> <i>{streak[i].username}</i> - <b>{streak[i].best_streak}</b>\n"
+            except IndexError:
+                pass
+        if res["games"] == "":
+            res["games"] = None
+        if res["guess_rate"] == "":
+            res["guess_rate"] = None
+        if res["longest_streak"] == "":
+            res["longest_streak"] = None
+        session.close()
+        return res
+    except Exception as e:
+        logging.exception(e)
+        session.close()
+        return None
+
+
 async def check_user_exists(user_id: int) -> bool:
     session = Session(engine)
     try:
         user = session.query(User).filter(User.tgId == user_id).first()
         session.close()
         return user
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -64,7 +95,8 @@ async def increment_user_win(user_id: int) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -77,7 +109,8 @@ async def increment_user_lose(user_id: int) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -87,10 +120,13 @@ async def increment_user_streak(user_id: int) -> bool:
     try:
         user = session.query(User).filter(User.tgId == user_id).first()
         user.streak += 1
+        if user.streak > user.best_streak:
+            user.best_streak = user.streak
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -99,13 +135,14 @@ async def reset_user_streak(user_id: int) -> bool:
     session = Session(engine)
     try:
         user = session.query(User).filter(User.tgId == user_id).first()
-        best_streak = user.streak
         user.streak = 0
-        user.best_streak = best_streak
+        if user.streak > user.best_streak:
+            user.best_streak = user.streak
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -118,7 +155,8 @@ async def increment_user_daily_win(user_id: int) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -131,7 +169,8 @@ async def increment_user_daily_lose(user_id: int) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -142,7 +181,8 @@ async def get_user_language(user_id: int) -> str:
         settings = session.query(Settings).filter(Settings.tgUserId == user_id).first()
         session.close()
         return settings.language
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
 
 
@@ -156,7 +196,8 @@ async def get_user_settings(user_id: int) -> dict | None:
         }
         session.close()
         return data
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return None
 
@@ -171,7 +212,8 @@ async def update_user_language(user_id: int, language: str) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -184,7 +226,8 @@ async def update_user_tries(user_id: int, tries: str) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -200,7 +243,8 @@ async def get_daily_words() -> dict | None:
                 "word_ru": daily.word_ru
             }
         return None
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return None
 
@@ -211,7 +255,8 @@ async def check_played_daily(user_id: int) -> bool:
         user = session.query(User).filter(User.tgId == user_id).first()
         session.close()
         return user.completed_daily
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -224,7 +269,8 @@ async def played_daily_set(user_id: int) -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False
 
@@ -238,6 +284,7 @@ async def reset_daily() -> bool:
         session.commit()
         session.close()
         return True
-    except:
+    except Exception as e:
+        logging.exception(e)
         session.close()
         return False

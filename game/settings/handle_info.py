@@ -8,7 +8,7 @@ router = Router()
 
 @router.callback_query(F.data.regexp(r"\w{1,}_info"))
 async def handle_info(callback: CallbackQuery):
-    lang = get_user_language(callback.from_user.id)
+    lang = await get_user_language(callback.from_user.id)
     strings = menu_strings_en if lang == "en" else menu_strings_ru
     try:
         await callback.answer(
